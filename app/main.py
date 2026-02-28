@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from sqlalchemy import text
 from app.core.database import engine, Base
+from app.api.workflow import router as workflow_router
 import app.models  # IMPORTANT: ensures models are registered
 
 app = FastAPI(
@@ -8,6 +9,7 @@ app = FastAPI(
     version="0.1.0"
 )
 
+app.include_router(workflow_router)
 
 # Create tables at startup
 @app.on_event("startup")
@@ -33,3 +35,5 @@ def db_check():
             return {"database": "connected", "result": result.scalar()}
     except Exception as e:
         return {"database": "error", "details": str(e)}
+
+
