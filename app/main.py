@@ -1,11 +1,18 @@
 from fastapi import FastAPI
 from sqlalchemy import text
-from app.core.database import engine
+from app.core.database import engine, Base
+import app.models  # IMPORTANT: ensures models are registered
 
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
     version="0.1.0"
 )
+
+
+# Create tables at startup
+@app.on_event("startup")
+def create_tables():
+    Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
