@@ -1,9 +1,10 @@
 from fastapi import FastAPI
+from sqlalchemy import text
+from app.core.database import engine
 
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
-    version="0.1.0",
-    description="Event-driven workflow automation backend"
+    version="0.1.0"
 )
 
 
@@ -15,3 +16,13 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+
+@app.get("/db-check")
+def db_check():
+    try:
+        with engine.connect() as connection:
+            result = connection.execute(text("SELECT 1"))
+            return {"database": "connected", "result": result.scalar()}
+    except Exception as e:
+        return {"database": "error", "details": str(e)}
