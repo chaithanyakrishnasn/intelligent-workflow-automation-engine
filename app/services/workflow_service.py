@@ -23,3 +23,29 @@ class WorkflowService:
     @staticmethod
     def get_workflow_by_id(db: Session, workflow_id: int):
         return db.query(Workflow).filter(Workflow.id == workflow_id).first()
+
+    @staticmethod
+    def update_workflow(db: Session, workflow_id: int, name: str, description: str, is_active: bool):
+        workflow = db.query(Workflow).filter(
+            Workflow.id == workflow_id).first()
+        if not workflow:
+            return None
+
+        workflow.name = name
+        workflow.description = description
+        workflow.is_active = is_active
+
+        db.commit()
+        db.refresh(workflow)
+        return workflow
+
+    @staticmethod
+    def delete_workflow(db: Session, workflow_id: int):
+        workflow = db.query(Workflow).filter(
+            Workflow.id == workflow_id).first()
+        if not workflow:
+            return None
+
+        db.delete(workflow)
+        db.commit()
+        return workflow
