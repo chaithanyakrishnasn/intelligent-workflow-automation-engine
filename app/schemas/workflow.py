@@ -16,3 +16,8 @@ class WorkflowResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class WorkflowUpdate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    is_active: bool
