@@ -1,0 +1,26 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+from app.models.trigger import Trigger
+from app.models.workflow import Workflow
+from app.schemas.trigger import TriggerCreate, TriggerResponse
+
+router = APIRouter(prefix="/triggers", tags=["Triggers"])
+
+
+@router.post("/{workflow_id}", response_model=TriggerResponse)
+def create_trigger(workflow_id: int, trigger: TriggerCreate, db: Session = Depends(get_db)):
+    workflow = db.query(Workflow).filter(Workflow.id == workflow_id).first()
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    new_trigger = Trigger(
+        type=trigger.type,
+        config=trigger.config,
+        workflow_id=workflow_id
+    )
+
+    db.add(new_trigger)
+    db.commit()
+    db.refresh(new_trigger)
+    return new_trigger
