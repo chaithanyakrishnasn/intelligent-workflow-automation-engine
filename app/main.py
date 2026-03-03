@@ -3,15 +3,19 @@ from sqlalchemy import text
 from app.core.database import engine, Base
 from app.api.workflow import router as workflow_router
 import app.models  # IMPORTANT: ensures models are registered
+from app.api.trigger import router as trigger_router
 
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
     version="0.1.0"
 )
+app.include_router(trigger_router)
 
 app.include_router(workflow_router)
 
 # Create tables at startup
+
+
 @app.on_event("startup")
 def create_tables():
     Base.metadata.create_all(bind=engine)
@@ -35,5 +39,3 @@ def db_check():
             return {"database": "connected", "result": result.scalar()}
     except Exception as e:
         return {"database": "error", "details": str(e)}
-
-
