@@ -22,7 +22,7 @@ class ExecutionService:
         if not trigger:
             return None, "No trigger attached"
 
-        if trigger.type != "webhook":
+        if trigger.type.lower() != "webhook":
             return None, "Unsupported trigger type"
 
         # Simulated action execution
