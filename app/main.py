@@ -4,6 +4,7 @@ from app.core.database import engine, Base
 from app.api.workflow import router as workflow_router
 import app.models  # IMPORTANT: ensures models are registered
 from app.api.trigger import router as trigger_router
+from app.api.execution import router as execution_router
 
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
@@ -12,6 +13,8 @@ app = FastAPI(
 app.include_router(trigger_router)
 
 app.include_router(workflow_router)
+
+app.include_router(execution_router)
 
 # Create tables at startup
 
