@@ -7,12 +7,13 @@ from app.api.trigger import router as trigger_router
 from app.api.execution import router as execution_router
 from app.api.action import router as action_router
 
-app.include_router(action_router)
-
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
     version="0.1.0"
 )
+
+app.include_router(action_router)
+
 app.include_router(trigger_router)
 
 app.include_router(workflow_router)
