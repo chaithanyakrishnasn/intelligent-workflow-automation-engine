@@ -14,6 +14,14 @@ def create_trigger(workflow_id: int, trigger: TriggerCreate, db: Session = Depen
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
 
+    existing_trigger = db.query(Trigger).filter(
+        Trigger.workflow_id == workflow_id
+    ).first()
+
+    if existing_trigger:
+        raise HTTPException(
+            status_code=400, detail="Trigger already exists for this workflow")
+
     new_trigger = Trigger(
         type=trigger.type,
         config=trigger.config,

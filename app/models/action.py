@@ -10,5 +10,5 @@ class Action(Base):
     type = Column(String, nullable=False)
     config = Column(String, nullable=True)
 
-    workflow_id = Column(Integer, ForeignKey("workflows.id"))
+    workflow_id = Column(Integer, ForeignKey("workflows.id"), unique=True)
     workflow = relationship("Workflow", back_populates="action")

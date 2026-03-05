@@ -11,5 +11,5 @@ class Trigger(Base):
     from sqlalchemy import Text
     config = Column(Text, nullable=True)
 
-    workflow_id = Column(Integer, ForeignKey("workflows.id"))
+    workflow_id = Column(Integer, ForeignKey("workflows.id"), unique=True)
     workflow = relationship("Workflow", back_populates="trigger")
