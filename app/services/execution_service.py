@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from app.models.workflow import Workflow
 from app.models.trigger import Trigger
-from app.models.execution_log import ExecutionLog
-from datetime import datetime
+from app.models.action import Action
+from app.actions.factory import ActionFactory
 
 
 class ExecutionService:
@@ -18,22 +18,23 @@ class ExecutionService:
             return None, "Workflow is inactive"
 
         trigger = db.query(Trigger).filter(
-            Trigger.workflow_id == workflow_id).first()
+            Trigger.workflow_id == workflow_id
+        ).first()
+
         if not trigger:
             return None, "No trigger attached"
 
-        if trigger.type.lower() != "webhook":
-            return None, "Unsupported trigger type"
+        action = db.query(Action).filter(
+            Action.workflow_id == workflow_id
+        ).first()
 
-        # Simulated action execution
-        log = ExecutionLog(
-            status="SUCCESS",
-            message="Webhook trigger executed successfully",
-            workflow_id=workflow_id,
-            timestamp=datetime.utcnow()
-        )
+        if not action:
+            return None, "No action attached"
 
-        db.add(log)
-        db.commit()
+        try:
+            action_handler = ActionFactory.get_action(action.type, db)
+            result = action_handler.execute(workflow_id)
+            return result, None
 
-        return log, None
+        except ValueError as e:
+            return None, str(e)

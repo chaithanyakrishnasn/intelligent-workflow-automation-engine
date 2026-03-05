@@ -5,6 +5,9 @@ from app.api.workflow import router as workflow_router
 import app.models  # IMPORTANT: ensures models are registered
 from app.api.trigger import router as trigger_router
 from app.api.execution import router as execution_router
+from app.api.action import router as action_router
+
+app.include_router(action_router)
 
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
