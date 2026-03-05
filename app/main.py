@@ -6,6 +6,7 @@ import app.models  # IMPORTANT: ensures models are registered
 from app.api.trigger import router as trigger_router
 from app.api.execution import router as execution_router
 from app.api.action import router as action_router
+from app.core.scheduler import start_scheduler
 
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
@@ -24,7 +25,8 @@ app.include_router(execution_router)
 
 
 @app.on_event("startup")
-def create_tables():
+def startup_event():
+    start_scheduler()
     Base.metadata.create_all(bind=engine)
 
 
