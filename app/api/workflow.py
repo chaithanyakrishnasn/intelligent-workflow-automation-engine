@@ -4,6 +4,8 @@ from app.core.database import get_db
 from app.schemas.workflow import WorkflowCreate, WorkflowResponse
 from app.services.workflow_service import WorkflowService
 from app.schemas.workflow import WorkflowUpdate
+from app.services.workflow_service import deactivate_workflow, activate_workflow
+
 
 router = APIRouter(prefix="/workflows", tags=["Workflows"])
 
@@ -50,3 +52,24 @@ def delete_workflow(workflow_id: int, db: Session = Depends(get_db)):
     if not deleted:
         raise HTTPException(status_code=404, detail="Workflow not found")
     return {"message": "Workflow deleted successfully"}
+
+@router.patch("/{workflow_id}/disable")
+def disable_workflow(workflow_id: int, db: Session = Depends(get_db)):
+
+    workflow = deactivate_workflow(db, workflow_id)
+
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    return {"message": "Workflow disabled"}
+
+
+@router.patch("/{workflow_id}/enable")
+def enable_workflow(workflow_id: int, db: Session = Depends(get_db)):
+
+    workflow = activate_workflow(db, workflow_id)
+
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    return {"message": "Workflow enabled"}
