@@ -11,6 +11,7 @@ router = APIRouter(prefix="/triggers", tags=["Triggers"])
 
 @router.post("/{workflow_id}", response_model=TriggerResponse)
 def create_trigger(workflow_id: int, trigger: TriggerCreate, db: Session = Depends(get_db)):
+
     workflow = db.query(Workflow).filter(Workflow.id == workflow_id).first()
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
@@ -29,12 +30,13 @@ def create_trigger(workflow_id: int, trigger: TriggerCreate, db: Session = Depen
         workflow_id=workflow_id
     )
 
-    if trigger.type == "timer":
-    interval = int(trigger.config)
-    register_timer_trigger(db, workflow_id, interval)
-
     db.add(new_trigger)
     db.commit()
     db.refresh(new_trigger)
+
+    # register timer trigger if needed
+    if trigger.type == "timer":
+        interval = int(trigger.config)
+        register_timer_trigger(db, workflow_id, interval)
+
     return new_trigger
-    

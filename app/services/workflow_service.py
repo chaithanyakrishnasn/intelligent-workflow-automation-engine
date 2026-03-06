@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.models.workflow import Workflow
 from app.core.scheduler import scheduler
 from app.services.execution_service import ExecutionService
+from app.core.scheduler import remove_job
 
 
 class WorkflowService:
@@ -63,3 +64,29 @@ def register_timer_trigger(db, workflow_id: int, interval_seconds: int):
         id=f"workflow_{workflow_id}",
         replace_existing=True
     )
+
+
+def deactivate_workflow(db, workflow_id: int):
+    workflow = db.query(Workflow).filter(Workflow.id == workflow_id).first()
+
+    if not workflow:
+        return None
+
+    workflow.is_active = False
+    db.commit()
+
+    remove_job(f"workflow_{workflow_id}")
+
+    return workflow
+
+
+def activate_workflow(db, workflow_id: int):
+    workflow = db.query(Workflow).filter(Workflow.id == workflow_id).first()
+
+    if not workflow:
+        return None
+
+    workflow.is_active = True
+    db.commit()
+
+    return workflow
