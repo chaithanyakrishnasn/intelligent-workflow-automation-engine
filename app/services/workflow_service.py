@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.workflow import Workflow
+from app.core.scheduler import scheduler
+from app.services.execution_service import ExecutionService
 
 
 class WorkflowService:
@@ -49,3 +51,15 @@ class WorkflowService:
         db.delete(workflow)
         db.commit()
         return workflow
+
+
+def register_timer_trigger(db, workflow_id: int, interval_seconds: int):
+
+    scheduler.add_job(
+        ExecutionService.execute_workflow,
+        "interval",
+        seconds=interval_seconds,
+        args=[db, workflow_id],
+        id=f"workflow_{workflow_id}",
+        replace_existing=True
+    )
