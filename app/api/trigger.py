@@ -4,6 +4,7 @@ from app.core.database import get_db
 from app.models.trigger import Trigger
 from app.models.workflow import Workflow
 from app.schemas.trigger import TriggerCreate, TriggerResponse
+from app.services.workflow_service import register_timer_trigger
 
 router = APIRouter(prefix="/triggers", tags=["Triggers"])
 
@@ -28,7 +29,12 @@ def create_trigger(workflow_id: int, trigger: TriggerCreate, db: Session = Depen
         workflow_id=workflow_id
     )
 
+    if trigger.type == "timer":
+    interval = int(trigger.config)
+    register_timer_trigger(db, workflow_id, interval)
+
     db.add(new_trigger)
     db.commit()
     db.refresh(new_trigger)
     return new_trigger
+    
