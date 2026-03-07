@@ -8,6 +8,7 @@ from app.api.execution import router as execution_router
 from app.api.action import router as action_router
 from app.core.scheduler import start_scheduler
 from app.api.webhook import router as webhook_router
+from app.api.dashboard import router as dashboard_router
 
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
@@ -24,6 +25,7 @@ app.include_router(execution_router)
 
 app.include_router(webhook_router)
 
+app.include_router(dashboard_router)
 # Create tables at startup
 
 
@@ -51,3 +53,9 @@ def db_check():
             return {"database": "connected", "result": result.scalar()}
     except Exception as e:
         return {"database": "error", "details": str(e)}
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy"
+    }
