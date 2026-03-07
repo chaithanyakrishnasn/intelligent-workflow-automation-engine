@@ -8,8 +8,12 @@ class ExecutionLog(Base):
     __tablename__ = "execution_logs"
 
     id = Column(Integer, primary_key=True, index=True)
+
     status = Column(String, nullable=False)
     message = Column(String, nullable=True)
+
+    retry_count = Column(Integer, default=0)
+
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     workflow_id = Column(Integer, ForeignKey("workflows.id"))

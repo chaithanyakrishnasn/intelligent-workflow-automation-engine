@@ -7,6 +7,7 @@ from app.api.trigger import router as trigger_router
 from app.api.execution import router as execution_router
 from app.api.action import router as action_router
 from app.core.scheduler import start_scheduler
+from app.api.webhook import router as webhook_router
 
 app = FastAPI(
     title="Intelligent Workflow Automation Engine",
@@ -20,6 +21,8 @@ app.include_router(trigger_router)
 app.include_router(workflow_router)
 
 app.include_router(execution_router)
+
+app.include_router(webhook_router)
 
 # Create tables at startup
 
